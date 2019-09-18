@@ -1,4 +1,6 @@
-import mona.token
+import mona.keyword as keyword
+import mona.operator as operator
+import mona.token as token
 
 def main():
 	print("Hello World")
