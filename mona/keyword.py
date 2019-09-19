@@ -31,5 +31,7 @@ keywordMap = {
 	"Function" : FUNCTION,
 	"print" : PRINT,
 	"input" : INPUT,
-	"base" : BASE
+	"base" : BASE,
+	"true" : TRUE,
+	"false" : FALSE
 }

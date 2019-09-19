@@ -4,7 +4,7 @@ import mona.token as token
 import mona.lexer as lexer
 
 def main():
-	lex = lexer.Lexer("2+2")
+	lex = lexer.Lexer("type Number")
 	lex.run()
 	for i in lex.tokens:
 		print(i)
