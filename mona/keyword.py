@@ -10,3 +10,26 @@ FLOAT = 8
 BOOLEAN = 9
 ARRAY = 10
 FUNCTION = 11
+PRINT = 12
+INPUT = 13
+BASE = 14
+TRUE = 15
+FALSE = 16
+
+keywordMap = {
+	"let" : LET,
+	"type" : TYPE,
+	"import" : IMPORT,
+	"as" : AS,
+	"other" : OTHER,
+	"return" : RETURN,
+	"Integer" : INTEGER,
+	"String" : STRING,
+	"Float" : FLOAT,
+	"Boolean" : BOOLEAN,
+	"Array" : ARRAY,
+	"Function" : FUNCTION,
+	"print" : PRINT,
+	"input" : INPUT,
+	"base" : BASE
+}

@@ -11,7 +11,7 @@ LAND = 9		#&&
 BOR = 10		#|
 LOR = 11		#||
 XOR = 12		#^
-MODULO = 13		#%
+MOD = 13		#%
 DOLLAR = 14		#$
 AT = 15			#@
 NOT = 16		#!
@@ -19,7 +19,7 @@ GRE = 17		#>
 GREQ = 18		#>=
 LE = 19			#<
 LEQ = 20		#<=
-EQUAL = 21		#=
+EQ = 21			#=
 QUES = 22		#?
 COLON = 23		#:
 ASSIGN = 24 	#:=
@@ -41,3 +41,49 @@ CBOP = 39		#{
 CBCLS = 40		#}
 FNARR = 41		#=>
 COMMA = 42		#,
+
+operatorMap = {
+	"~" : TILDE,
+	"+" : PLUS,
+	"++" : INC,
+	"-" : MINUS,
+	"--" : DEC,
+	"*" : STAR,
+	"**" : POWER,
+	"/" : DIV,
+	"&" : BAND,
+	"&&" : LAND,
+	"|" : BOR,
+	"||" : LOR,
+	"^" : XOR,
+	"%" : MOD,
+	"$" : DOLLAR,
+	"@" : AT,
+	"!" : NOT,
+	">" : GRE,
+	">=" : GREQ,
+	"<" : LE,
+	"<=" : LEQ,
+	"=" : EQ,
+	"?" : QUES,
+	":" : COLON,
+	":=" : ASSIGN,
+	"." : DOT,
+	"\'" : QUOTE,
+	"\"" : DQUOTE,
+	"`" : SQUOTE,
+	">>" : SHR,
+	"<<" : SHL,
+	".." : RANGE,
+	"::" : TYPECOL,
+	"?::" : TYPEOF,
+	";" : SCOLON,
+	"(" : POP,
+	")" : PCLS,
+	"[" : SOP,
+	"]" : SCLS,
+	"{" : CBOP,
+	"}" : CBCLS,
+	"=>": FNARR,
+	"," : COMMA
+}
