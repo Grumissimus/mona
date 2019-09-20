@@ -57,7 +57,7 @@ class SymbolTable:
 		except:
 			return None
 	
-	def addSymbol(self, name, sym):
+	def insertSymbol(self, name, sym):
 		if name in self.table:
 			self.table[name].append(sym)
 		else:
