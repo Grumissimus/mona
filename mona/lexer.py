@@ -24,6 +24,8 @@ class Lexer():
 				self.getStringLiteral()
 			elif( self.curChar() == "\'" ):
 				self.getRawStringLiteral()
+			elif( self.curChar() == "`" ):
+				self.getSpecialStringLiteral()
 			elif( not self.curChar().isalpha() and not self.curChar().isspace() ):
 				self.getOperator()
 			else:
@@ -34,6 +36,9 @@ class Lexer():
 	
 	def curChar(self):
 		return self.source[self.srcptr] if self.srcptr < self.srclen else '\0'
+		
+	def curNChars(self, n):
+		return self.source[self.srcptr:self.srcptr+n] if self.srcptr+n < self.srclen else '\0'
 		
 	def getNumber(self):
 		while (self.curChar().isnumeric() or self.curChar() in ['x','X','b','B','.','A','a','C','c','D','d','E','e','F','f']):
@@ -109,5 +114,41 @@ class Lexer():
 		self.buffer = []
 		return True
 		
+	def getSpecialStringLiteral(self):
+		self.srcptr += 1 #Skip first `
+		
+		while((not self.curChar().isalpha() and not self.curChar().isspace()) and (not self.curChar() in '$@\'\"{}()[]`') and self.curChar() != '\0'):
+			self.buffer.append( self.curChar() )
+			self.srcptr += 1
+		
+		self.srcptr += 1 #Skip second `
+			
+		self.makeToken(token.TOKEN_IDENTIFIER, "".join(self.buffer), self.lineNum)
+		self.buffer = []
+		return True
+		
 	def getOperator(self):
+		if self.curChar() == ';':
+			self.srcptr += 1
+			while( self.curChar() != "\n" and self.curChar() != '\0' ):
+				self.srcptr += 1
+			return True
+	
+		if self.curChar() in ['(', ')', '[', ']', '{', '}', '%', '^', '~', '/', '$', '@', '!']:
+			self.makeToken(token.TOKEN_NONALPHA, operator.operatorMap[self.curChar()], self.lineNum)
+			self.srcptr += 1
+			return True
+		else:
+			while((not self.curChar().isalpha() and not self.curChar().isspace()) and (not self.curChar() in '$@\'\"{}()[]`') and self.curChar() != '\0'):
+				self.buffer.append( self.curChar() )
+				self.srcptr += 1
+				
+			try:
+				self.makeToken(token.TOKEN_NONALPHA, operator.operatorMap["".join(self.buffer)], self.lineNum)
+				self.buffer = []
+				return True
+			except:
+				return False
+				
+			
 		return False

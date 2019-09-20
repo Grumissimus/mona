@@ -41,6 +41,7 @@ CBOP = 39		#{
 CBCLS = 40		#}
 FNARR = 41		#=>
 COMMA = 42		#,
+CUSTOM_OP = 43	#
 
 operatorMap = {
 	"~" : TILDE,
