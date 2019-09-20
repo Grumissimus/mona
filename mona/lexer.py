@@ -31,11 +31,8 @@ class Lexer():
 		self.tokens.append( token.Token(type, value, line) )
 		self.buffer = []
 	
-	def curChar(self):
-		return self.source[self.srcptr] if self.srcptr < self.srclen else '\0'
-		
-	def curNChars(self, n):
-		return self.source[self.srcptr:self.srcptr+n] if self.srcptr+n < self.srclen else '\0'
+	def curChar(self, n = 0):
+		return self.source[self.srcptr+n] if self.srcptr+n < self.srclen else '\0'
 		
 	def getNumber(self):
 		while (self.curChar().isalnum() or self.curChar() == "."):

@@ -1,7 +1,5 @@
-import mona.keyword as keyword
-import mona.operator as operator
-import mona.token as token
 import mona.lexer as lexer
+import mona.parser as parser
 
 def main():
 	lex = lexer.Lexer("2<<-1")
