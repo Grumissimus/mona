@@ -4,7 +4,7 @@ import mona.token as token
 import mona.lexer as lexer
 
 def main():
-	lex = lexer.Lexer("let a := [ 1 2 3 ]")
+	lex = lexer.Lexer("2<<-1")
 	lex.run()
 	for i in lex.tokens:
 		print(i)
