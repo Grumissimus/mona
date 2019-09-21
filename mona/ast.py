@@ -4,13 +4,15 @@ class AST(object):
 
 #integers, floats, strings, types
 class LiteralAST(AST):
-	def __init__(self, v):
+	def __init__(self, t, v, l = None):
+		self.type = t
 		self.value = v
+		self.lines = l
 		
 #identifiers
 class IdenAST(AST):
-	def __init__(self, name):
-		self.name = name
+	def __init__(self, id):
+		self.id = id
 
 #array literals
 class ArrayAST(AST):
@@ -38,7 +40,7 @@ class PostUnaryAST(AST):
 #binary operators
 class BinaryAST(AST):
 	def __init__(self, op, a, b):
-		self.op
+		self.op = op
 		self.arg1 = a
 		self.arg2 = b
 

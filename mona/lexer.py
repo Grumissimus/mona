@@ -77,7 +77,7 @@ class Lexer():
 		value = "".join(self.buffer)
 		
 		if value == "true" or value == "false":
-			self.makeToken(token.TOKEN_BOOLEAN, 1 if value == "true" else 0, self.lineNum);
+			self.makeToken(token.TOKEN_BOOLEAN, True if value == "true" else False, self.lineNum);
 			return True
 		
 		try:

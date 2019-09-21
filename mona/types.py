@@ -82,17 +82,17 @@ class ParametrizedType(Type):
 def constructDefaultGraph():
 	graph = TypeGraph()
 	any = NormalType('Any')
-	graph['Any'] = any
+	graph.types['Any'] = any
 		
 	none = NormalType('None')
-	graph['Any'] = none
+	graph.types['Any'] = none
 		
-	graph['Integer'] = NormalType('Integer').addSuper( any )
-	graph['Float'] = NormalType('Float').addSuper( any )
-	graph['String'] = NormalType('String').addSuper( any )
-	graph['Boolean'] = NormalType('Boolean').addSuper( any )
-	graph['Array'] = NormalType('Array').addSuper( any )
-	graph['Function'] = NormalType('Function').addSuper( any )
-	graph['Block'] = NormalType('Block').addSuper( any )
+	graph.types['Integer'] = NormalType('Integer').addSuper( any )
+	graph.types['Float'] = NormalType('Float').addSuper( any )
+	graph.types['String'] = NormalType('String').addSuper( any )
+	graph.types['Boolean'] = NormalType('Boolean').addSuper( any )
+	graph.types['Array'] = NormalType('Array').addSuper( any )
+	graph.types['Function'] = NormalType('Function').addSuper( any )
+	graph.types['Block'] = NormalType('Block').addSuper( any )
 		
 	return graph
