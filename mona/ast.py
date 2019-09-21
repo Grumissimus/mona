@@ -2,11 +2,15 @@
 class AST(object):
 	pass
 
-#identifiers, integers, floats, strings, types
+#integers, floats, strings, types
 class LiteralAST(AST):
-	def __init__(self, t, v):
-		self.type = t
-		self.value = t
+	def __init__(self, v):
+		self.value = v
+		
+#identifiers
+class IdenAST(AST):
+	def __init__(self, name):
+		self.name = name
 
 #array literals
 class ArrayAST(AST):
@@ -46,6 +50,11 @@ class TernaryAST(AST):
 		self.arg2 = b
 		self.arg2 = c
 
+class FunCallAST(AST):
+	def __init__(self, name, args = []):
+		self.name = name
+		self.args = args
+		
 #blocks		
 class BlockAST(AST):
 	def __init__(self, b):

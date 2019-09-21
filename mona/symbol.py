@@ -1,4 +1,5 @@
 import mona.types as type
+import mona.token as token
 
 class Symbol(object):
 	pass
@@ -13,9 +14,9 @@ class Scope(object):
 	
 	def __str__(self):
 		return "(" + self.name + ", " + (int)(self.level) + ")"
-
+		
 class Variable(Symbol):
-	def __init__(self, type, value, scope):
+	def __init__(self, type, value, scope = None):
 		self.type = type
 		self.value = value
 		self.scope = scope
@@ -76,3 +77,13 @@ class SymbolTable:
 					return
 		else:
 			del symToDel
+			
+def convertTokenTypeIntoDataType(tok, typeg):
+	if token.TOKEN_NUMBER: 
+		return typeg['Integer']
+	elif token.TOKEN_FLOAT:
+		return typeg['Float']
+	elif token.TOKEN_STRING:
+		return typeg['String']
+	elif token.TOKEN_BOOLEAN:
+		return typeg['Boolean']
