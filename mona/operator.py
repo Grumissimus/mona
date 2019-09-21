@@ -31,7 +31,7 @@ SHR = 29		#>>
 SHL = 30		#<<
 RANGE = 31		#..
 TYPECOL = 32	#::
-TYPEOF = 33		#?::
+ISTYPE = 33		#::=
 SCOLON = 34 	#;
 POP = 35		#(
 PCLS = 36		#)
@@ -42,6 +42,7 @@ CBCLS = 40		#}
 FNARR = 41		#=>
 COMMA = 42		#,
 CUSTOM_OP = 43	#
+TYPEOF = 44		#?:
 
 operatorMap = {
 	"~" : TILDE,
@@ -77,7 +78,8 @@ operatorMap = {
 	"<<" : SHL,
 	".." : RANGE,
 	"::" : TYPECOL,
-	"?::" : TYPEOF,
+	"?:" : TYPEOF,
+	"::=" : ISTYPE,
 	";" : SCOLON,
 	"(" : POP,
 	")" : PCLS,
