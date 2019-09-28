@@ -43,6 +43,7 @@ FNARR = 41		#=>
 COMMA = 42		#,
 CUSTOM_OP = 43	#
 TYPEOF = 44		#?:
+LOOP = 45		#?*
 
 operatorMap = {
 	"~" : TILDE,
@@ -88,5 +89,6 @@ operatorMap = {
 	"{" : CBOP,
 	"}" : CBCLS,
 	"=>": FNARR,
-	"," : COMMA
+	"," : COMMA,
+	"?*" : LOOP
 }

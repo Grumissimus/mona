@@ -11,8 +11,9 @@ class LiteralAST(AST):
 		
 #identifiers
 class IdenAST(AST):
-	def __init__(self, id):
+	def __init__(self, id, type = None):
 		self.id = id
+		self.type = type
 
 #array literals
 class ArrayAST(AST):
@@ -47,15 +48,21 @@ class BinaryAST(AST):
 #ternary operators
 class TernaryAST(AST):
 	def __init__(self, op, a, b, c):
-		self.op
+		self.op = op
 		self.arg1 = a
 		self.arg2 = b
-		self.arg2 = c
+		self.arg3 = c
 
 class FunCallAST(AST):
 	def __init__(self, name, args = []):
 		self.name = name
 		self.args = args
+		
+#lambda		
+class LambdaAST(AST):
+	def __init__(self, args, body):
+		self.args = args
+		self.body = body
 		
 #blocks		
 class BlockAST(AST):
