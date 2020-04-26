@@ -11,7 +11,7 @@ def main():
 if __name__ == "__main__":
 	main()
 '''
-lex = lexer.Lexer("(a b){ a+b }")
+lex = lexer.Lexer("@+$*(?6+1) 2+2")
 lex.run()
 pars = parser.Parser(lex.tokens)
-pars.run()
+parsingResult = pars.run()

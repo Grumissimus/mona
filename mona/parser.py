@@ -22,10 +22,14 @@ class Parser():
 			if(ast != None):
 				self.program.append(ast)
 				continue
-		print(self.program)
+		return self.program
+	
+	"""
+		Expressions
+	"""
 	
 	def literalExpr(self):
-		if( self.check(token.TOKEN_NONALPHA, [token.TOKEN_NUMBER, token.TOKEN_FLOAT, token.TOKEN_STRING, token.TOKEN_BOOLEAN]) ):
+		if self.check(t = [token.TOKEN_NUMBER, token.TOKEN_FLOAT, token.TOKEN_STRING, token.TOKEN_BOOLEAN]) :
 			tok = ast.LiteralAST(self.convertTokType(), self.cur().value)
 			self.next()
 			return tok
@@ -41,6 +45,7 @@ class Parser():
 			self.next()
 			tok = self.assnExpr()
 			if not self.check(token.TOKEN_NONALPHA, operator.PCLS):
+				print(tok);
 				args = []
 				
 				if type(tok) is not ast.IdenAST:
@@ -238,6 +243,8 @@ class Parser():
 			return False
 		if type(value) is list:
 			return curtok.value in value
+		if type(t) is list:
+			return curtok.type in t
 		else:
 			return curtok.type == t if value == None else (curtok.type == t and curtok.value == value)
 		
