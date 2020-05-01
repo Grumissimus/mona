@@ -17,11 +17,12 @@ class Parser():
 		
 	def run(self):
 		while( self.cur() != None ):
-			ast = self.assnExpr()
+			ast = self.retExpr()
 			
 			if(ast != None):
 				self.program.append(ast)
 				continue
+				
 		return self.program
 	
 	"""
@@ -36,6 +37,23 @@ class Parser():
 		elif( self.check(token.TOKEN_IDENTIFIER) ):
 			tok = ast.IdenAST(self.cur().value)
 			self.next()
+			if self.check( token.TOKEN_NONALPHA, operator.POP ):
+				self.next()
+				iden = tok
+				args = []
+								
+				while True:
+					val = self.literalExpr()
+					
+					if val != None:
+						args.append( val )
+					else:
+						break
+					
+				self.expect(token.TOKEN_NONALPHA, operator.PCLS, "Error: Expected closing parethensis in function definition at the line {}, but got {} instead".format(self.cur().line, self.cur()) )
+				self.next()
+				
+				tok = ast.FunCallAST(iden, args);
 			return tok
 		elif( self.check(token.TOKEN_NONALPHA, operator.AT) or self.check(token.TOKEN_NONALPHA, operator.DOLLAR) or self.check(token.TOKEN_NONALPHA, operator.COLON) ):
 			tok = ast.NullaryAST(self.cur().value)
@@ -45,7 +63,6 @@ class Parser():
 			self.next()
 			tok = self.assnExpr()
 			if not self.check(token.TOKEN_NONALPHA, operator.PCLS):
-				print(tok);
 				args = []
 				
 				if type(tok) is not ast.IdenAST:
@@ -210,7 +227,16 @@ class Parser():
 			tok = ast.BinaryAST( op, tok, self.assnExpr() )
 			
 		return tok
-
+	
+	def retExpr(self):
+		tok = None
+		if self.check(token.TOKEN_KEYWORD, keyword.RETURN):
+			op = self.cur().value
+			self.next()
+			tok = ast.PreUnaryAST(op, self.assnExpr() )
+		
+		return tok if tok != None else self.assnExpr()
+	
 	def convertTokType(self):
 		if self.cur().type == token.TOKEN_NUMBER or self.check(token.TOKEN_KEYWORD, keyword.INTEGER):
 			return self.types.getType("Integer")
