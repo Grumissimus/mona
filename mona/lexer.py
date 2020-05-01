@@ -13,7 +13,6 @@ class Lexer():
         self.buffer = []
         self.lineNum = 1
 
-
     def run(self):
         while self.srcptr < self.srclen:
             if self.curChar().isnumeric():
@@ -29,19 +28,16 @@ class Lexer():
             else:
                 self.next()
 
-
     def makeToken(self, type, value, line):
         self.tokens.append(token.Token(type, value, line))
         self.buffer = []
 
-
-    def curChar(self, n = 0):
+    def curChar(self, n=0):
         return self.source[self.srcptr+n] if self.srcptr+n < self.srclen else '\0'
-
 
     def getNumber(self):
         while (self.curChar().isalnum() or self.curChar() == "."):
-            self.buffer.append( self.curChar() )
+            self.buffer.append(self.curChar())
             self.next()
 
         number = "".join(self.buffer)
@@ -49,31 +45,30 @@ class Lexer():
 
         if number.startswith("0x") or number.startswith("0X"):
             try:
-                value = int( number, 16 )
+                value = int(number, 16)
             except:
                 self.croak("Error: The hexadecimal number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
         elif number.startswith("0b") or number.startswith("0B"):
             try:
-                value = int( number, 2 )
+                value = int(number, 2)
             except:
                 self.croak("Error: The binary number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
         elif number.startswith("0") and not number.startswith("0."):
             try:
-                value = int( number, 8 )
+                value = int(number, 8)
             except:
                 self.croak("Error: The octal number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
         elif "." in number:
             try:
-                value = float( number )
+                value = float(number)
             except:
                 self.croak("Error: The floating-point number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
         else:
-            value = int( number, 10 )
+            value = int(number, 10)
 
 
         self.makeToken(token.TOKEN_FLOAT if isinstance(value, float) else token.TOKEN_NUMBER, value, self.lineNum)
         return True
-
 
     def getIdenOrKeyword(self):
         while self.curChar() == "_" or self.curChar().isalnum():
@@ -93,7 +88,6 @@ class Lexer():
             self.makeToken(token.TOKEN_IDENTIFIER, value, self.lineNum)
             return True
 
-
     def getStringLiteral(self):
         stringType = self.curChar()
 
@@ -111,9 +105,8 @@ class Lexer():
         self.makeToken(token.TOKEN_STRING, "".join(self.buffer).encode('utf-8').decode('unicode_escape') if stringType == "\"" else "".join(self.buffer), self.lineNum)
         return True
 
-
     def getSpecialStringLiteral(self):
-        self.next() #Skip first `
+        self.next()  #Skip first `
 
         while((not self.curChar().isalnum() and not self.curChar().isspace()) and (not self.curChar() in '$@\'\"{}()[]`\0\n')):
             self.buffer.append( self.curChar() )
@@ -122,11 +115,10 @@ class Lexer():
         if(self.srcptr == self.srclen or self.curChar() == '\n'):
             self.croak("Error: Unexpected EOF when parsing a string starting from the line {}", self.lineNum)
 
-        self.next() #Skip second `
+        self.next()  #Skip second `
 
         self.makeToken(token.TOKEN_IDENTIFIER, "".join(self.buffer), self.lineNum)
         return True
-
 
     def getOperator(self):
         if self.curChar() == ';':
@@ -150,15 +142,11 @@ class Lexer():
             except:
                 self.makeToken(token.TOKEN_IDENTIFIER, "".join(self.buffer), self.lineNum)
                 return False
-
-
         return False
 
-
-    def croak(self,errorMessage):
+    def croak(self, errorMessage):
         print(errorMessage, file=sys.stderr);
         sys.exit()
-
 
     def next(self):
         if(self.srcptr < self.srclen):
