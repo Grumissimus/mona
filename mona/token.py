@@ -1,4 +1,6 @@
 from typing import TypeVar, Generic
+from mona.operator import Operator
+from mona.keyword import Keyword as KeywordEnum
 
 T = TypeVar('T')
 
@@ -19,7 +21,7 @@ class Identifier(Token[str]):
     pass
 
 
-class Keyword(Token[int]):
+class Keyword(Token[KeywordEnum]):
     pass
 
 
@@ -36,4 +38,12 @@ class Float(Token[float]):
 
 
 class Boolean(Token[bool]):
+    pass
+
+
+class Operator(Token[Operator]):
+    pass
+
+
+class Separator(Operator):
     pass

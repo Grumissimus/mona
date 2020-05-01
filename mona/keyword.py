@@ -1,37 +1,13 @@
-LET = 0
-TYPE = 1
-IMPORT = 2
-AS = 3
-OTHER = 4
-RETURN = 5
-INTEGER = 6
-STRING = 7
-FLOAT = 8
-BOOLEAN = 9
-ARRAY = 10
-FUNCTION = 11
-PRINT = 12
-INPUT = 13
-BASE = 14
-TRUE = 15
-FALSE = 16
+from enum import Enum
+
+Keyword = Enum('Keyword', 'LET TYPE IMPORT AS IN RETURN TRUE FALSE')
 
 keywordMap = {
-	"let" : LET,
-	"type" : TYPE,
-	"import" : IMPORT,
-	"as" : AS,
-	"other" : OTHER,
-	"return" : RETURN,
-	"Integer" : INTEGER,
-	"String" : STRING,
-	"Float" : FLOAT,
-	"Boolean" : BOOLEAN,
-	"Array" : ARRAY,
-	"Function" : FUNCTION,
-	"print" : PRINT,
-	"input" : INPUT,
-	"base" : BASE,
-	"true" : TRUE,
-	"false" : FALSE
+    "let": Keyword.LET,
+    "type": Keyword.TYPE,
+    "import": Keyword.IMPORT,
+    "as": Keyword.AS,
+    "return": Keyword.RETURN,
+    "true": Keyword.TRUE,
+    "false": Keyword.FALSE
 }

@@ -12,7 +12,7 @@ if __name__ == "__main__":
 	main()
 '''
 
-lex = lexer.Lexer(" return 5 ")
-lex.run()
-pars = parser.Parser(lex.tokens)
-parsingResult = pars.run()
+lex = lexer.Lexer("5")
+a = lex.run()
+# pars = parser.Parser(lex.tokens)
+# parsingResult = pars.run()

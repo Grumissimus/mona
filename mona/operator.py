@@ -1,94 +1,100 @@
-TILDE = 0		#~
-PLUS = 1		#+
-INC = 2			#++
-MINUS = 3		#-
-DEC = 4			#--
-STAR = 5		#*
-POWER = 6		#**
-DIV = 7			#/
-BAND = 8		#&
-LAND = 9		#&&
-BOR = 10		#|
-LOR = 11		#||
-XOR = 12		#^
-MOD = 13		#%
-DOLLAR = 14		#$
-AT = 15			#@
-NOT = 16		#!
-GRE = 17		#>
-GREQ = 18		#>=
-LE = 19			#<
-LEQ = 20		#<=
-EQ = 21			#=
-QUES = 22		#?
-COLON = 23		#:
-ASSIGN = 24 	#:=
-DOT = 25		#.
-QUOTE = 26		#'
-DQUOTE = 27		#"
-SQUOTE = 28		#`
-SHR = 29		#>>
-SHL = 30		#<<
-RANGE = 31		#..
-TYPECOL = 32	#::
-ISTYPE = 33		#::=
-SCOLON = 34 	#;
-POP = 35		#(
-PCLS = 36		#)
-SOP	= 37		#[
-SCLS = 38		#]
-CBOP = 39		#{
-CBCLS = 40		#}
-FNARR = 41		#=>
-COMMA = 42		#,
-CUSTOM_OP = 43	#
-TYPEOF = 44		#?:
-LOOP = 45		#?*
+from enum import Enum
+
+OperatorNames = [
+    'TILDE',
+    'PLUS',
+    'INC',
+    'MINUS',
+    'DEC',
+    'STAR',
+    'POWER',
+    'DIV',
+    'BAND',
+    'LAND',
+    'BOR',
+    'LOR',
+    'XOR',
+    'MOD',
+    'DOLLAR',
+    'AT',
+    'NOT',
+    'GRE',
+    'GREQ',
+    'LE',
+    'LEQ',
+    'EQ',
+    'QUES',
+    'COLON',
+    'ASSIGN',
+    'DOT',
+    'QUOTE',
+    'DQUOTE',
+    'SQUOTE',
+    'SHR',
+    'SHL',
+    'RANGE',
+    'TYPECOL',
+    'ISTYPE',
+    'SCOLON',
+    'POP',
+    'PCLS',
+    'SOP',
+    'SCLS',
+    'CBOP',
+    'CBCLS',
+    'FNARR',
+    'COMMA',
+    'CUSTOM_OP',
+    'TYPEOF',
+    'LOOP',
+]
+
+Operator = Enum('Operator', " ".join(OperatorNames) )
 
 operatorMap = {
-	"~" : TILDE,
-	"+" : PLUS,
-	"++" : INC,
-	"-" : MINUS,
-	"--" : DEC,
-	"*" : STAR,
-	"**" : POWER,
-	"/" : DIV,
-	"&" : BAND,
-	"&&" : LAND,
-	"|" : BOR,
-	"||" : LOR,
-	"^" : XOR,
-	"%" : MOD,
-	"$" : DOLLAR,
-	"@" : AT,
-	"!" : NOT,
-	">" : GRE,
-	">=" : GREQ,
-	"<" : LE,
-	"<=" : LEQ,
-	"=" : EQ,
-	"?" : QUES,
-	":" : COLON,
-	":=" : ASSIGN,
-	"." : DOT,
-	"\'" : QUOTE,
-	"\"" : DQUOTE,
-	"`" : SQUOTE,
-	">>" : SHR,
-	"<<" : SHL,
-	".." : RANGE,
-	"::" : TYPECOL,
-	"?:" : TYPEOF,
-	"::=" : ISTYPE,
-	";" : SCOLON,
-	"(" : POP,
-	")" : PCLS,
-	"[" : SOP,
-	"]" : SCLS,
-	"{" : CBOP,
-	"}" : CBCLS,
-	"=>": FNARR,
-	"," : COMMA,
-	"?*" : LOOP
+    "~" : Operator.TILDE,
+    "+" : Operator.PLUS,
+    "++" : Operator.INC,
+    "-" : Operator.MINUS,
+    "--" : Operator.DEC,
+    "*" : Operator.STAR,
+    "**" : Operator.POWER,
+    "/" : Operator.DIV,
+    "&" : Operator.BAND,
+    "&&" : Operator.LAND,
+    "|" : Operator.BOR,
+    "||" : Operator.LOR,
+    "^" : Operator.XOR,
+    "%" : Operator.MOD,
+    "$" : Operator.DOLLAR,
+    "@" : Operator.AT,
+    "!" : Operator.NOT,
+    ">" : Operator.GRE,
+    ">=" : Operator.GREQ,
+    "<" : Operator.LE,
+    "<=" : Operator.LEQ,
+    "=" : Operator.EQ,
+    "?" : Operator.QUES,
+    ":" : Operator.COLON,
+    ":=" : Operator.ASSIGN,
+    "." : Operator.DOT,
+    "\'" : Operator.QUOTE,
+    "\"" : Operator.DQUOTE,
+    "`" : Operator.SQUOTE,
+    ">>" : Operator.SHR,
+    "<<" : Operator.SHL,
+    ".." : Operator.RANGE,
+    "::" : Operator.TYPECOL,
+    "?:" : Operator.TYPEOF,
+    "::=" : Operator.ISTYPE,
+    ";" : Operator.SCOLON,
+    "(" : Operator.POP,
+    ")" : Operator.PCLS,
+    "[" : Operator.SOP,
+    "]" : Operator.SCLS,
+    "{" : Operator.CBOP,
+    "}" : Operator.CBCLS,
+    "=>" : Operator.FNARR,
+    "," : Operator.COMMA,
+    "?*" : Operator.LOOP
 }

@@ -2,6 +2,7 @@ import mona.token as token
 import mona.operator as operator
 import mona.keyword as keyword
 import sys
+import re
 
 
 class Lexer():
@@ -10,43 +11,46 @@ class Lexer():
         self.source = src
         self.srclen = len(src)
         self.srcptr = 0
-        self.buffer = []
         self.lineNum = 1
 
     def run(self):
         while self.srcptr < self.srclen:
-            if self.curChar().isnumeric():
+            if self.current().isnumeric():
                 self.getNumber()
-            elif self.curChar().isalpha() or self.curChar() == "_":
+            elif self.current().isalpha() or self.current() == "_":
                 self.getIdenOrKeyword()
-            elif self.curChar() in "\"\'":
+            elif self.current() in "\"\'":
                 self.getStringLiteral()
-            elif self.curChar() == "`":
+            elif self.current() == "`":
                 self.getSpecialStringLiteral()
-            elif not self.curChar().isalpha() and not self.curChar().isspace():
+            elif not self.current().isalpha() and not self.current().isspace():
                 self.getOperator()
             else:
                 self.next()
 
-    def makeToken(self, type, value, line):
-        self.tokens.append(token.Token(type, value, line))
-        self.buffer = []
+    def read(self, condition):
+        startInd = self.srcptr
+        while True:
+            self.next()
+            if self.current() == '\0' or not condition(self):
+                break;
 
-    def curChar(self, n=0):
+        return self.source[startInd:self.srcptr]
+
+    def current(self, n=0):
         return self.source[self.srcptr+n] if self.srcptr+n < self.srclen else '\0'
 
     def getNumber(self):
-        while (self.curChar().isalnum() or self.curChar() == "."):
-            self.buffer.append(self.curChar())
-            self.next()
+        number = self.read(
+            lambda s : s.current().isalnum() or s.current() == "."
+        )
 
-        number = "".join(self.buffer)
         value = 0
 
         if number.startswith("0x") or number.startswith("0X"):
             try:
                 value = int(number, 16)
-            except:
+            except ValueError:
                 self.croak("Error: The hexadecimal number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
         elif number.startswith("0b") or number.startswith("0B"):
             try:
@@ -66,53 +70,48 @@ class Lexer():
         else:
             value = int(number, 10)
 
-
-        self.makeToken(token.TOKEN_FLOAT if isinstance(value, float) else token.TOKEN_NUMBER, value, self.lineNum)
-        return True
+        return token.Float(value, self.lineNum) if isinstance(value, float) else token.Number(value, self.lineNum)
 
     def getIdenOrKeyword(self):
-        while self.curChar() == "_" or self.curChar().isalnum():
-            self.buffer.append( self.curChar() )
-            self.next()
+        value = self.read(
+            lambda s: s.current() == "_" or s.current().isalnum()
+        )
 
-        value = "".join(self.buffer)
-
-        if value == "true" or value == "false":
-            self.makeToken(token.TOKEN_BOOLEAN, True if value == "true" else False, self.lineNum);
-            return True
+        if value in ["true", "false"]:
+            return {
+                "true": token.Boolean(True, self.lineNum),
+                "false": token.Boolean(False, self.lineNum)
+            }[value]
 
         try:
-            self.makeToken(token.TOKEN_KEYWORD, keyword.keywordMap[value], self.lineNum)
-            return True
+            return token.Keyword(keyword.keywordMap[value], self.lineNum)
         except KeyError:
-            self.makeToken(token.TOKEN_IDENTIFIER, value, self.lineNum)
-            return True
+            return token.Identifier(value, self.lineNum)
 
     def getStringLiteral(self):
-        stringType = self.curChar()
+        stringType = self.current()
 
         self.next() #Skip first "\'
 
-        while self.curChar() != stringType and not self.curChar() in '\0\n':
-            self.buffer.append( self.curChar() )
+        while self.current() != stringType and not self.current() in '\0\n':
+            self.buffer.append( self.current() )
             self.next()
 
-        if(self.srcptr == self.srclen or self.curChar() == '\n'):
+        if(self.srcptr == self.srclen or self.current() == '\n'):
             self.croak("Error: Unexpected EOF when parsing a string starting from the line {}", self.lineNum)
 
         self.next() #Skip second "\'
 
-        self.makeToken(token.TOKEN_STRING, "".join(self.buffer).encode('utf-8').decode('unicode_escape') if stringType == "\"" else "".join(self.buffer), self.lineNum)
-        return True
+        return token.String("".join(self.buffer).encode('utf-8').decode('unicode_escape') if stringType == "\"" else "".join(self.buffer), self.lineNum)
 
     def getSpecialStringLiteral(self):
         self.next()  #Skip first `
 
-        while((not self.curChar().isalnum() and not self.curChar().isspace()) and (not self.curChar() in '$@\'\"{}()[]`\0\n')):
-            self.buffer.append( self.curChar() )
+        while((not self.current().isalnum() and not self.current().isspace()) and (not self.current() in '$@\'\"{}()[]`\0\n')):
+            self.buffer.append( self.current() )
             self.next()
 
-        if(self.srcptr == self.srclen or self.curChar() == '\n'):
+        if(self.srcptr == self.srclen or self.current() == '\n'):
             self.croak("Error: Unexpected EOF when parsing a string starting from the line {}", self.lineNum)
 
         self.next()  #Skip second `
@@ -121,35 +120,31 @@ class Lexer():
         return True
 
     def getOperator(self):
-        if self.curChar() == ';':
+        if self.current() == ';':
             self.srcptr += 1
-            while( self.curChar() != "\n\0" ):
+            while self.current() != "\n\0":
                 self.next()
-            return True
+                return
 
-        if self.curChar() in '()[]{}%^~/$@!':
-            self.makeToken(token.TOKEN_NONALPHA, operator.operatorMap[self.curChar()], self.lineNum)
+        if self.current() in '()[]{}%^~/$@!':
             self.next()
-            return True
+            return token.Operator(operator.operatorMap[self.current()], self.lineNum)
         else:
-            while((not self.curChar().isalnum() and not self.curChar().isspace()) and (not self.curChar() in '$@\'\"{}()[]`') and self.curChar() != '\0'):
-                self.buffer.append( self.curChar() )
-                self.next()
+            value = self.read( lambda s: re.fullmatch(r'[^\w\d$@\'\"{}()\[\]\`\0]', s.current) )
 
             try:
-                self.makeToken(token.TOKEN_NONALPHA, operator.operatorMap["".join(self.buffer)], self.lineNum)
-                return True
+                return token.Operator(operator.operatorMap[value], self.lineNum)
             except:
-                self.makeToken(token.TOKEN_IDENTIFIER, "".join(self.buffer), self.lineNum)
+                self.makeToken(token.TOKEN_IDENTIFIER, value, self.lineNum)
                 return False
         return False
 
     def croak(self, errorMessage):
-        print(errorMessage, file=sys.stderr);
+        print(errorMessage, file=sys.stderr)
         sys.exit()
 
     def next(self):
         if(self.srcptr < self.srclen):
-            self.srcptr+=1;
-        if(self.curChar() == '\n'):
+            self.srcptr+=1
+        if(self.current() == '\n'):
             self.lineNum += 1
