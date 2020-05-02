@@ -12,7 +12,6 @@ class Monad(Generic[T]):
     def unit(self, value: T):
         return Monad[T](value)
 
-    @abstractmethod
     def bind(self, func: Callable[[T], 'Monad[S]']) -> 'Monad[S]':
         return Monad[S](func(self.value))
 

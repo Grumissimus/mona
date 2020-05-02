@@ -1,19 +1,31 @@
-from typing import Callable, TypeVar
-from mona.common.monad import Monad, Id
-from mona.common.error import Error
-
-TSuccess = TypeVar('TSuccess')
+from mona.common.monad import Monad
 
 
-class Ok(Id[TSuccess]):
-    pass
+class Result(Monad):
+    def __new__(cls, value, isRight=True):
+        if isRight:
+            return super(Result, cls).__new__(Ok)
+        else:
+            return super(Result, cls).__new__(Fail)
+
+    def __init__(self, value, isRight):
+        pass
+
+    def bind(self, func):
+        try:
+            return Result(func(self.value), True)
+        except BaseException as e:
+            return Result(e, False)
 
 
-class Fail(Id[Error]):
-    pass
+class Ok(Result):
+    def __init__(self, value, isRight=True):
+        self.value = value
 
 
-class Result(Monad[TSuccess]):
-    def __init__(self, success: Ok = None, failure: Fail = None):
-        self.value = (success, failure)
+class Fail(Result):
+    def __init__(self, value, isRight=False):
+        self.value = value
 
+    def bind(self, func):
+        return self
