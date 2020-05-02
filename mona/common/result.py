@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, Tuple
+from typing import Callable, TypeVar
 from mona.common.monad import Monad, Id
 from mona.common.error import Error
 
@@ -13,5 +13,7 @@ class Fail(Id[Error]):
     pass
 
 
-class Result():
-    pass
+class Result(Monad[TSuccess]):
+    def __init__(self, success: Ok = None, failure: Fail = None):
+        self.value = (success, failure)
+

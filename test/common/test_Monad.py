@@ -5,6 +5,29 @@ from mona.common.monad import Monad, Id
 
 
 class TestMonad(unittest.TestCase):
+    # m(x).bind(f) <-> f(x)
+    def test_monad_first_law(self):
+        square = lambda x: x * 2
+        value = 2
+        self.assertEqual(Monad(value).bind(square).value, square(value))
+
+    # m.return a <=> m(a)
+    def test_monad_second_law(self):
+        val = 1
+        monad = Monad(val)
+        self.assertEqual(monad, monad.unit(val))
+
+    # m.bind(f).bind(g) <=> m.bind( f(g(a)) )
+    def test_monad_third_law(self):
+        value = 1
+        monad = Monad(value)
+        foo = lambda x: x - 1
+        bar = lambda y: y - 2
+        self.assertEqual(
+            monad.bind(foo).bind(bar).value,
+            Monad(value).bind(lambda x: bar(foo(x))).value
+        )
+
     def test_monad_number(self):
         monad = Monad(2)
         self.assertIsInstance(monad, Monad)
