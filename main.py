@@ -1,7 +1,6 @@
-import mona.lexer as lexer
-import mona.parser as parser
-
-lex = lexer.Lexer("5")
+from mona.lexer.lexer import Lexer
+lex = Lexer("let a := 5\n a := 6 ;will cause error!")
 a = lex.run()
-# pars = parser.Parser(lex.tokens)
-# parsingResult = pars.run()
+
+for i in lex.tokens:
+    print(i)

@@ -1,6 +1,7 @@
 import mona.lexer.token as token
 import mona.lexer.operator as operator
 import mona.lexer.keyword as keyword
+from mona.common.error import ErrorFactory
 import sys
 import re
 
@@ -14,17 +15,25 @@ class Lexer():
         self.lineNum = 1
 
     def run(self):
+        dispatch = [
+            (r'\d', self.getNumber),
+            (r'[\w_]', self.getIdenOrKeyword),
+            (r'\"', self.getEscapedString),
+            (r'\'', self.getUnescapedString),
+            (r';', self.skipComment),
+            (r'[^\w\d\s]', self.getOperator)
+        ]
+
         while self.srcptr < self.srclen:
-            if self.current().isnumeric():
-                self.getNumber()
-            elif self.current().isalpha() or self.current() == "_":
-                self.getIdenOrKeyword()
-            elif self.current() in "\"\'":
-                self.getStringLiteral()
-            elif self.current() == "`":
-                self.getSpecialStringLiteral()
-            elif not self.current().isalpha() and not self.current().isspace():
-                self.getOperator()
+            Token = None
+
+            for i in dispatch:
+                if re.fullmatch(i[0], self.current()):
+                    Token = i[1]()
+                    break
+
+            if Token is not None:
+                self.tokens.append(Token)
             else:
                 self.next()
 
@@ -33,7 +42,7 @@ class Lexer():
         while True:
             self.next()
             if self.current() == '\0' or not condition(self):
-                break;
+                break
 
         return self.source[startInd:self.srcptr]
 
@@ -41,103 +50,93 @@ class Lexer():
         return self.source[self.srcptr+n] if self.srcptr+n < self.srclen else '\0'
 
     def getNumber(self):
-        number = self.read(
-            lambda s : s.current().isalnum() or s.current() == "."
-        )
+        value = self.read(lambda s: re.match(r'[\w\d\.]', self.current()))
+        number = 0
 
-        value = 0
+        dispatch = [
+            (r'0[xX][\dA-Fa-f]+', lambda x: int(x, 16)),
+            (r'0[bB][01]+', lambda x: int(x, 2)),
+            (r'0[^.][0-7]+', lambda x: int(x, 8)),
+            (r'(0?|[1-9]\d+)*\.\d+', lambda x: float(x)),
+            (r'(0|[1-9]\d*)', lambda x: int(x, 10))
+        ]
 
-        if number.startswith("0x") or number.startswith("0X"):
-            try:
-                value = int(number, 16)
-            except ValueError:
-                self.croak("Error: The hexadecimal number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
-        elif number.startswith("0b") or number.startswith("0B"):
-            try:
-                value = int(number, 2)
-            except:
-                self.croak("Error: The binary number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
-        elif number.startswith("0") and not number.startswith("0."):
-            try:
-                value = int(number, 8)
-            except:
-                self.croak("Error: The octal number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
-        elif "." in number:
-            try:
-                value = float(number)
-            except:
-                self.croak("Error: The floating-point number \'{}\' at the line {} has an incorrect format.".format(number, self.lineNum) )
+        for i in dispatch:
+            if re.fullmatch(i[0], value) is not None:
+                number = i[1](value)
+                break
+
+        if isinstance(value, float):
+            return token.Float(number, self.lineNum)
         else:
-            value = int(number, 10)
-
-        return token.Float(value, self.lineNum) if isinstance(value, float) else token.Number(value, self.lineNum)
+            return token.Number(number, self.lineNum)
 
     def getIdenOrKeyword(self):
-        value = self.read(
-            lambda s: s.current() == "_" or s.current().isalnum()
-        )
+        value = self.read(lambda s: re.match(r'[\w\d_]', s.current()))
 
-        if value in ["true", "false"]:
-            return {
-                "true": token.Boolean(True, self.lineNum),
-                "false": token.Boolean(False, self.lineNum)
-            }[value]
+        booleanDispatch = [
+            ("true", True),
+            ("false", False)
+        ]
+
+        for i in booleanDispatch:
+            if value == i[0]:
+                return token.Boolean(i[1], self.lineNum)
 
         try:
             return token.Keyword(keyword.keywordMap[value], self.lineNum)
         except KeyError:
             return token.Identifier(value, self.lineNum)
 
-    def getStringLiteral(self):
-        stringType = self.current()
+    def _readString(self, stop):
+        value = self.read(
+            lambda s: self.current() != '\n' or not (self.current() == stop and self.current(-1) != '\\')
+        )
 
-        self.next() #Skip first "\'
+        dispatch = [
+            (
+                lambda: self.current() == '\n',
+                "Error: Unexpected end of the string at the line {}"
+            ),
+            (
+                lambda: self.current() == '\0' and value[-1] != "\"",
+                "Error: Unexpected EOF at the line {}"
+            )
+        ]
 
-        while self.current() != stringType and not self.current() in '\0\n':
-            self.buffer.append( self.current() )
-            self.next()
+        for i in dispatch:
+            if i[0]():
+                self.croak(i[1].format(self.lineNum))
 
-        if(self.srcptr == self.srclen or self.current() == '\n'):
-            self.croak("Error: Unexpected EOF when parsing a string starting from the line {}", self.lineNum)
+        return value
 
-        self.next() #Skip second "\'
+    def getEscapedString(self):
+        value = self._readString('\"')
+        value = value.encode('utf-8').decode('unicode_escape')
 
-        return token.String("".join(self.buffer).encode('utf-8').decode('unicode_escape') if stringType == "\"" else "".join(self.buffer), self.lineNum)
+        return token.String(value, self.lineNum)
 
-    def getSpecialStringLiteral(self):
-        self.next()  #Skip first `
+    def getUnescapedString(self):
+        value = self._readString('\'')
 
-        while((not self.current().isalnum() and not self.current().isspace()) and (not self.current() in '$@\'\"{}()[]`\0\n')):
-            self.buffer.append( self.current() )
-            self.next()
+        return token.String(value, self.lineNum)
 
-        if(self.srcptr == self.srclen or self.current() == '\n'):
-            self.croak("Error: Unexpected EOF when parsing a string starting from the line {}", self.lineNum)
-
-        self.next()  #Skip second `
-
-        self.makeToken(token.TOKEN_IDENTIFIER, "".join(self.buffer), self.lineNum)
-        return True
+    def skipComment(self):
+        self.read(lambda x: x.current() != '\n' )
 
     def getOperator(self):
-        if self.current() == ';':
-            self.srcptr += 1
-            while self.current() != "\n\0":
-                self.next()
-                return
-
-        if self.current() in '()[]{}%^~/$@!':
+        if self.current() in '()[]{}':
+            value = self.current()
             self.next()
-            return token.Operator(operator.operatorMap[self.current()], self.lineNum)
+            return token.Separator(operator.operatorMap[value], self.lineNum)
         else:
-            value = self.read( lambda s: re.fullmatch(r'[^\w\d$@\'\"{}()\[\]\`\0]', s.current) )
+            value = self.read( lambda s: re.fullmatch(r'[^\w\d\s\'\"{}()\[\]]', s.current()))
 
             try:
                 return token.Operator(operator.operatorMap[value], self.lineNum)
-            except:
-                self.makeToken(token.TOKEN_IDENTIFIER, value, self.lineNum)
-                return False
-        return False
+            except Exception as e:
+                print(e)
+                return token.Identifier(value, self.lineNum)
 
     def croak(self, errorMessage):
         print(errorMessage, file=sys.stderr)
@@ -145,6 +144,6 @@ class Lexer():
 
     def next(self):
         if(self.srcptr < self.srclen):
-            self.srcptr+=1
+            self.srcptr += 1
         if(self.current() == '\n'):
             self.lineNum += 1

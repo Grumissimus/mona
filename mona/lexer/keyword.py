@@ -1,6 +1,6 @@
 from enum import Enum
 
-Keyword = Enum('Keyword', 'LET TYPE IMPORT AS IN RETURN TRUE FALSE')
+Keyword = Enum('Keyword', 'LET TYPE IMPORT AS IN RETURN TRUE FALSE MUTABLE')
 
 keywordMap = {
     "let": Keyword.LET,
@@ -9,5 +9,6 @@ keywordMap = {
     "as": Keyword.AS,
     "return": Keyword.RETURN,
     "true": Keyword.TRUE,
-    "false": Keyword.FALSE
+    "false": Keyword.FALSE,
+    "mut": Keyword.MUTABLE
 }

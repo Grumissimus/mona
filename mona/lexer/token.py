@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic
-from mona.operator import Operator
-from mona.keyword import Keyword as KeywordEnum
+from mona.lexer.operator import Operator as OperatorEnum
+from mona.lexer.keyword import Keyword as KeywordEnum
 
 T = TypeVar('T')
 
@@ -41,7 +41,7 @@ class Boolean(Token[bool]):
     pass
 
 
-class Operator(Token[Operator]):
+class Operator(Token[OperatorEnum]):
     pass
 
 
