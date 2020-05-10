@@ -54,7 +54,9 @@ class TernaryAST(AST):
 		self.arg3 = c
 
 class FunCallAST(AST):
-	def __init__(self, name, args = []):
+	def __init__(self, name, args=None):
+		if args is None:
+			args = []
 		self.name = name
 		self.args = args
 		

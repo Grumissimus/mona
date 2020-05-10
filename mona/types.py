@@ -86,13 +86,13 @@ def constructDefaultGraph():
 		
 	none = NormalType('None')
 	graph.types['Any'] = none
-		
-	graph.types['Integer'] = NormalType('Integer').addSuper( any )
-	graph.types['Float'] = NormalType('Float').addSuper( any )
-	graph.types['String'] = NormalType('String').addSuper( any )
-	graph.types['Boolean'] = NormalType('Boolean').addSuper( any )
-	graph.types['Array'] = NormalType('Array').addSuper( any )
-	graph.types['Function'] = NormalType('Function').addSuper( any )
-	graph.types['Block'] = NormalType('Block').addSuper( any )
+
+	NormalType('Integer').addSuper(any)
+	NormalType('Float').addSuper(any)
+	NormalType('String').addSuper(any)
+	NormalType('Boolean').addSuper(any)
+	NormalType('Array').addSuper(any)
+	NormalType('Function').addSuper(any)
+	NormalType('Block').addSuper(any)
 		
 	return graph

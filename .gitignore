@@ -105,7 +105,7 @@ venv.bak/
 
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
-.Python
+/venv/*
 [Bb]in
 [Ii]nclude
 [Ll]ib
@@ -113,5 +113,6 @@ venv.bak/
 [Ll]ocal
 [Ss]cripts
 pyvenv.cfg
-.venv
 pip-selfcheck.json
+**/.idea/workspace.xml
+**/.idea/tasks.xml

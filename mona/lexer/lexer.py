@@ -1,12 +1,12 @@
-import mona.lexer.token as token
-import mona.lexer.operator as operator
-import mona.lexer.keyword as keyword
-from mona.common.error import ErrorFactory
-import sys
 import re
+import sys
+
+import mona.lexer.keyword as keyword
+import mona.lexer.operator as operator
+import mona.lexer.token as token
 
 
-class Lexer():
+class Lexer:
     def __init__(self, src=""):
         self.tokens = []
         self.source = src
@@ -50,7 +50,7 @@ class Lexer():
         return self.source[self.srcptr+n] if self.srcptr+n < self.srclen else '\0'
 
     def getNumber(self):
-        value = self.read(lambda s: re.match(r'[\w\d\.]', self.current()))
+        value = self.read(lambda s: re.match(r'[\w\d.]', self.current()))
         number = 0
 
         dispatch = [
@@ -143,7 +143,7 @@ class Lexer():
         sys.exit()
 
     def next(self):
-        if(self.srcptr < self.srclen):
+        if self.srcptr < self.srclen:
             self.srcptr += 1
-        if(self.current() == '\n'):
+        if self.current() == '\n':
             self.lineNum += 1

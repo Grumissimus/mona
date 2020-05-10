@@ -13,7 +13,7 @@ class Scope(object):
 		return self.name == other.name and self.level == other.level
 	
 	def __str__(self):
-		return "(" + self.name + ", " + (int)(self.level) + ")"
+		return "(" + self.name + ", " + int(self.level) + ")"
 		
 class Variable(Symbol):
 	def __init__(self, type, value, scope = None):
@@ -22,7 +22,7 @@ class Variable(Symbol):
 		self.scope = scope
 		
 	def __str__(self):
-		return (str)(value)+" :: "+self.type.name
+		return str(value) + " :: " + self.type.name
 		
 class FunctionArgument:
 	def __init__(self, type, name):
@@ -42,7 +42,7 @@ class Function(Symbol):
 		self.scope = scope
 		
 	def __str__(self):
-		return "("+self.type.name+","+(str)(value)+")"
+		return "(" + self.type.name +"," + str(value) + ")"
 		
 class DataType(Symbol):
 	def __init__(self, type):
@@ -67,10 +67,10 @@ class SymbolTable:
 	def removeSymbol(self, name, scope = None):
 		symToDel = self.getSymbol(name)
 	
-		if(symToDel == None):
+		if symToDel is None:
 			return
 		
-		if scope != None:
+		if scope is not None:
 			for i in symToDel:
 				if i.scope == scope:
 					del i

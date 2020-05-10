@@ -7,7 +7,7 @@ import mona.symbol as symbol
 
 import sys
 
-class Parser():
+class Parser:
 	def __init__(self, tok):
 		self.tokens = tok
 		self.tokptr = 0
@@ -16,10 +16,10 @@ class Parser():
 		self.symtab = symbol.SymbolTable()
 		
 	def run(self):
-		while( self.cur() != None ):
+		while self.cur() is not None:
 			ast = self.retExpr()
 			
-			if(ast != None):
+			if ast is not None:
 				self.program.append(ast)
 				continue
 				
@@ -34,7 +34,7 @@ class Parser():
 			tok = ast.LiteralAST(self.convertTokType(), self.cur().value)
 			self.next()
 			return tok
-		elif( self.check(token.TOKEN_IDENTIFIER) ):
+		elif self.check(token.TOKEN_IDENTIFIER):
 			tok = ast.IdenAST(self.cur().value)
 			self.next()
 			if self.check( token.TOKEN_NONALPHA, operator.POP ):
@@ -45,7 +45,7 @@ class Parser():
 				while True:
 					val = self.literalExpr()
 					
-					if val != None:
+					if val is not None:
 						args.append( val )
 					else:
 						break
@@ -55,11 +55,11 @@ class Parser():
 				
 				tok = ast.FunCallAST(iden, args);
 			return tok
-		elif( self.check(token.TOKEN_NONALPHA, operator.AT) or self.check(token.TOKEN_NONALPHA, operator.DOLLAR) or self.check(token.TOKEN_NONALPHA, operator.COLON) ):
+		elif self.check(token.TOKEN_NONALPHA, operator.AT) or self.check(token.TOKEN_NONALPHA, operator.DOLLAR) or self.check(token.TOKEN_NONALPHA, operator.COLON):
 			tok = ast.NullaryAST(self.cur().value)
 			self.next()
 			return tok
-		elif( self.check(token.TOKEN_NONALPHA, operator.POP) ):
+		elif self.check(token.TOKEN_NONALPHA, operator.POP):
 			self.next()
 			tok = self.assnExpr()
 			if not self.check(token.TOKEN_NONALPHA, operator.PCLS):
@@ -73,7 +73,7 @@ class Parser():
 				while True:
 					val = self.literalExpr()
 					
-					if val != None:
+					if val is not None:
 						args.append( val )
 					else:
 						break
@@ -90,20 +90,20 @@ class Parser():
 				self.next()
 				
 			return tok
-		elif( self.check(token.TOKEN_NONALPHA, operator.SOP) ):
+		elif self.check(token.TOKEN_NONALPHA, operator.SOP):
 			self.next()
 			tok = self.assnExpr()
 			self.expect(token.TOKEN_NONALPHA, operator.SCLS, "Error: Expected closing parethensis at the line {}, but got {} instead".format(self.cur().line, self.cur()) )
 			self.next()
 			return tok
-		elif( self.check(token.TOKEN_NONALPHA, operator.CBOP) ):
+		elif self.check(token.TOKEN_NONALPHA, operator.CBOP):
 			self.next()
 			exprs = []
 			
 			while True:
 				val = self.assnExpr()
 				
-				if val != None:
+				if val is not None:
 					exprs.append( val )
 				else:
 					break
@@ -134,16 +134,16 @@ class Parser():
 			op = self.cur().value
 			self.next()
 			arg = self.unaryExpr()
-			if arg != None:
+			if arg is not None:
 				tok = ast.PreUnaryAST(op, arg)
 				return tok
 			self.tokptr = prev
 			
-		return tok if tok != None else self.postunaryExpr()
+		return tok if tok is not None else self.postunaryExpr()
 	
 	def powExpr(self):
 		tok = self.unaryExpr()
-		if( self.check(token.TOKEN_NONALPHA, operator.POWER) ):
+		if self.check(token.TOKEN_NONALPHA, operator.POWER):
 			op = self.cur().value
 			self.next()
 			tok = ast.PreUnaryAST(op, tok, self.powExpr() )
@@ -203,14 +203,14 @@ class Parser():
 			cond = tok
 			res = self.condExpr()
 			
-			if res == None:
+			if res is None:
 				self.croak("Error: Incomplete conditional expression at the line {}.", self.cur().line);
 			
 			if self.check(token.TOKEN_NONALPHA, operator.COLON):
 				self.next()
 				els = self.condExpr()
 				
-				if els == None:
+				if els is None:
 					self.croak("Error: Incomplete conditional expression at the line {}.", self.cur().line);
 				
 				tok = ast.TernaryAST(op, cond, res, els)
@@ -235,7 +235,7 @@ class Parser():
 			self.next()
 			tok = ast.PreUnaryAST(op, self.assnExpr() )
 		
-		return tok if tok != None else self.assnExpr()
+		return tok if tok is not None else self.assnExpr()
 	
 	def convertTokType(self):
 		if self.cur().type == token.TOKEN_NUMBER or self.check(token.TOKEN_KEYWORD, keyword.INTEGER):
@@ -260,23 +260,23 @@ class Parser():
 			if not (curtok.value in value):
 				self.croak(onfail)
 		else:
-			if curtok == None or not (curtok.type == t if value == 0 else curtok.type == t and curtok.value == value):
+			if curtok is None or not (curtok.type == t if value == 0 else curtok.type == t and curtok.value == value):
 				self.croak(onfail)
 		
 	def check(self, t, value = None):
 		curtok = self.cur()
-		if curtok == None:
+		if curtok is None:
 			return False
 		if type(value) is list:
 			return curtok.value in value
 		if type(t) is list:
 			return curtok.type in t
 		else:
-			return curtok.type == t if value == None else (curtok.type == t and curtok.value == value)
+			return curtok.type == t if value is None else (curtok.type == t and curtok.value == value)
 		
 	def cur(self, n = 0):
 		return self.tokens[self.tokptr+n] if self.tokptr+n < len(self.tokens) else None
 	
 	def next(self):
-		if(self.tokptr < len(self.tokens)):
+		if self.tokptr < len(self.tokens):
 			self.tokptr+=1;

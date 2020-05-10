@@ -25,7 +25,7 @@ AllErrors = InternalError + LexerError + ParserError + SemanticError
 ErrorType = Enum('ErrorType', " ".join(AllErrors))
 
 
-class Error():
+class Error:
     def __init__(self, errorType: ErrorType, message: str):
         self.errorType = errorType
         self.message = message
@@ -34,7 +34,7 @@ class Error():
         return self.message
 
 
-class ErrorMessageBuilder():
+class ErrorMessageBuilder:
     def __init__(self):
         self.rowline = 0
         self.colline = 0
@@ -67,7 +67,7 @@ class ErrorMessageBuilder():
         )
 
 
-class ErrorFactory():
+class ErrorFactory:
     def IncorrectHexadecimalNumberFormat(self, rowline, colline) -> Error:
         errType = ErrorType.IncorrectHexadecimalNumberFormat
         message = ErrorMessageBuilder() \
